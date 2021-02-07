@@ -4,6 +4,7 @@ const router = express.Router();
 
 const { auth } = require('../middleware/auth');
 const multer = require('multer');
+const ffmpeg = require('fluent-ffmpeg');
 
 //STORAGE MULTER CONFIG
 let storage = multer.diskStorage({
@@ -37,6 +38,46 @@ router.post('/uploadfiles', (req, res) => {
     }
     return res.json({ success: true, url: res.req.file.path, fileName: res.req.file.filename });
   });
+});
+
+router.post('/thumbnail', (req, res) => {
+  //썸네일 생성하고 비디오 러닝타임도 가져오기
+  let filePath = '';
+  let fileDuration = '';
+
+  //비디오 정보 가져오기
+  ffmpeg.ffprobe(req.body.url, function (err, metadata) {
+    console.dir(metadata);
+    console.log(metadata.format.duration);
+
+    fileDuration = metadata.format.duration;
+  });
+
+  //썸네일 생성
+  ffmpeg(req.body.url) //클라이언트에서 온 비디오 저장경로를 가져온다, uploads
+    .on('filenames', function (filenames) {
+      //비디오 파일네임 생성
+      console.log('Will generate ' + filenames.join(', '));
+      filePath = 'uploads/thumbnails/' + filenames[0];
+    })
+    .on('end', function () {
+      //썸네일 생성 후 할 일
+      console.log('Screenshots taken');
+      return res.json({ success: true, url: filePath, fileDuration: fileDuration });
+    })
+    .on('error', function (err) {
+      //에러가 날 때 할 일
+      console.error(err);
+      return res.json({ success: false, err });
+    })
+    .screenshots({
+      // Will take screens at 20%, 40%, 60% and 80% of the video
+      count: 3,
+      folder: 'uploads/thumbnails',
+      size: '320x240',
+      // %b input basename ( filename w/o extension )
+      filename: 'thumbnail-%b.png',
+    });
 });
 
 module.exports = router;
