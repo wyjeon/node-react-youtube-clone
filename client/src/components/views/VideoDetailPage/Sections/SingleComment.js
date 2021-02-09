@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Axios from 'axios';
+import LikeDisklikes from './LikeDisklikes';
 
 import { Comment, Avatar, Button, Input } from 'antd';
 const { TextArea } = Input;
@@ -15,6 +16,7 @@ function SingleComment(props) {
   };
 
   const actions = [
+    <LikeDisklikes userId={localStorage.getItem('userId')} commentId={props.comment._id} />,
     <span onClick={onClickOpenReply} key="comment-basic">
       Reply to
     </span>,
