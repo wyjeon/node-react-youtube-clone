@@ -21,7 +21,7 @@ function SingleComment(props) {
   ];
 
   const handleChange = event => {
-    setCommentValue(event.currentTarget.CommentValue);
+    setCommentValue(event.currentTarget.value);
   };
 
   const onSubmit = event => {
@@ -56,7 +56,7 @@ function SingleComment(props) {
 
       {OpenReply && (
         <form style={{ display: 'flex' }} onSubmit={onSubmit}>
-          <TextArea style={{ width: '100%', borderRadius: '5px' }} onChange={handleChange} value={CommentValue} placeholder="write some comments" />
+          <TextArea style={{ width: '100%', borderRadius: '5px' }} onChange={handleChange} value={CommentValue} placeholder="write some comments!!" />
           <br />
           <Button style={{ width: '20%', height: '52px' }} onClick={onSubmit}>
             Submit
