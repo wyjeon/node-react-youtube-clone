@@ -50,18 +50,72 @@ function LikeDisklikes(props) {
     });
   }, []);
 
+  const onLike = () => {
+    if (LikeAction === null) {
+      Axios.post('/api/like/upLike', variable).then(response => {
+        if (response.data.success) {
+          setLikes(Likes + 1);
+          setLikeAction('liked');
+
+          if (DisLikeAction !== null) {
+            setDisLikeAction(null);
+            setDislikes(Dislikes - 1);
+          }
+        } else {
+          alert('like를 지우지 못했습니다.');
+        }
+      });
+    } else {
+      Axios.post('/api/like/unLike', variable).then(response => {
+        if (response.data.success) {
+          setLikes(Likes - 1);
+          setLikeAction(null);
+        } else {
+          alert('like를 올리지 못했습니다.');
+        }
+      });
+    }
+  };
+
+  const onDislike = () => {
+    if (DisLikeAction !== null) {
+      Axios.post('/api/like/unDisLike', variable).then(response => {
+        if (response.data.success) {
+          setDislikes(Dislikes - 1);
+          setDisLikeAction(null);
+        } else {
+          alert('DisLike를 지우지 못했습니다.');
+        }
+      });
+    } else {
+      Axios.post('/api/like/upDislike', variable).then(response => {
+        if (response.data.success) {
+          setDislikes(Dislikes + 1);
+          setDisLikeAction('disliked');
+
+          if (LikeAction !== null) {
+            setLikeAction(null);
+            setLikes(Likes - 1);
+          }
+        } else {
+          alert('DisLike를 지우지 못했습니다.');
+        }
+      });
+    }
+  };
+
   return (
     <div>
       <span ley="comment-basic-like">
         <Tooltip title="Like">
-          <Icon type="like" theme={LikeAction === 'liked' ? 'filled' : 'outlined'} onClick />
+          <Icon type="like" theme={LikeAction === 'liked' ? 'filled' : 'outlined'} onClick={onLike} />
         </Tooltip>
       </span>
       <span style={{ paddingLeft: '8px', cursor: 'auto' }}>{Likes}</span>
-
+      &nbsp;&nbsp;
       <span ley="comment-basic-dislike">
         <Tooltip title="DisLike">
-          <Icon type="dislike" theme={DisLikeAction === 'disliked' ? 'filled' : 'outlined'} onClick />
+          <Icon type="dislike" theme={DisLikeAction === 'disliked' ? 'filled' : 'outlined'} onClick={onDislike} />
         </Tooltip>
       </span>
       <span style={{ paddingLeft: '8px', cursor: 'auto' }}>{Dislikes}</span>
